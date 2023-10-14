@@ -219,8 +219,8 @@ public class DDRGameManager : MonoBehaviour
     void UpdateScore()
     {
         Score.text = "Good: " + good + "\n";
-        Score.text = "Great: " + great + "\n";
-        Score.text = "Perfect: " + perfect + "\n";
+        Score.text += "Great: " + great + "\n";
+        Score.text += "Perfect: " + perfect + "\n";
         Score.text += "Incorrect: " + incorrect + "\n";
         Score.text += "Missed: " + missed + "\n";
     }
