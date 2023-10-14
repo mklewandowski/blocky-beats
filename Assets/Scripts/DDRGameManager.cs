@@ -7,14 +7,21 @@ public class DDRGameManager : MonoBehaviour
     [SerializeField]
     GameObject Title;
     [SerializeField]
-    GameObject Play;
+    GameObject StartContainer;
     [SerializeField]
     GameObject PlayButtons;
+    [SerializeField]
+    GameObject PlayField;
+    [SerializeField]
+    GameObject[] Highlights;
+    [SerializeField]
+    GameObject[] Glows;
+    
     // Start is called before the first frame update
     void Start()
     {
         Title.GetComponent<MoveNormal>().MoveDown();
-        Play.GetComponent<MoveNormal>().MoveUp();        
+        StartContainer.GetComponent<MoveNormal>().MoveUp();        
     }
 
     // Update is called once per frame
@@ -31,8 +38,9 @@ public class DDRGameManager : MonoBehaviour
     public void StartGame()
     {      
         Title.GetComponent<MoveNormal>().MoveUp();
-        Play.GetComponent<MoveNormal>().MoveDown();   
+        StartContainer.GetComponent<MoveNormal>().MoveDown();   
         PlayButtons.GetComponent<MoveNormal>().MoveUp();   
+        PlayField.GetComponent<MoveNormal>().MoveDown(); 
     }
 
     public void SelectUp()
