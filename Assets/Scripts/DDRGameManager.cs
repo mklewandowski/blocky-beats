@@ -24,6 +24,10 @@ public class DDRGameManager : MonoBehaviour
     float rowTimer = 0;
     float rowTimerMax = 2f;
 
+    int correct = 0;
+    int incorrect = 0;
+    int missed = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,11 +50,6 @@ public class DDRGameManager : MonoBehaviour
         HandleRowCreation();
     }
 
-    public void HandleInput()
-    {
-
-    }
-
     public void MoveRows()
     {
         bool deleteFirst = false;
@@ -71,7 +70,7 @@ public class DDRGameManager : MonoBehaviour
         {
             // if (RateCoroutine != null) StopCoroutine(RateCoroutine);
             // RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", new Color(255f/255f, 0, 110f/255f)));
-            // missed++;
+            missed++;
             // UpdateScore();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
@@ -97,21 +96,75 @@ public class DDRGameManager : MonoBehaviour
         Globals.CurrentGameState = Globals.GameStates.Playing;
     }
 
+    public void HandleInput()
+    {
+        Globals.Orientations inputOrientation = Globals.Orientations.None;
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            inputOrientation = Globals.Orientations.Left;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            inputOrientation = Globals.Orientations.Right;
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            inputOrientation = Globals.Orientations.Up;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            inputOrientation = Globals.Orientations.Down;
+        }
+        if (inputOrientation != Globals.Orientations.None)
+            VetInput(inputOrientation);
+    }
+
     public void SelectUp()
     {
-
-    }
-    public void SelectLeft()
-    {
-        
+        VetInput(Globals.Orientations.Up);
     }
     public void SelectDown()
     {
-        
+        VetInput(Globals.Orientations.Down);
     }
-    public void SelecRight()
+    public void SelectLeft()
     {
-        
+        VetInput(Globals.Orientations.Left);
+    }
+    public void SelectRight()
+    {
+        VetInput(Globals.Orientations.Right);
+    }
+
+
+    void VetInput(Globals.Orientations inputOrientation)
+    {
+        if (Rows.Count > 0 && Rows[0].GetComponent<Row>().InHitZone)
+        {
+            if (Rows[0].GetComponent<Row>().Orientation == inputOrientation)
+            {
+                correct++;
+                // StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, Color.yellow, .15f, .3f));
+                // if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+                // RateCoroutine = StartCoroutine(ShowRate("GREAT!", Color.yellow));
+            }
+            else 
+            {
+                incorrect++;
+                // StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
+                // if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+                // RateCoroutine = StartCoroutine(ShowRate("OOPS!", new Color(255f/255f, 0, 110f/255f)));
+            }
+            Destroy(Rows[0]);
+            Rows.RemoveAt(0);
+    }
+        else
+        {
+            incorrect++;
+            // if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+            // RateCoroutine = StartCoroutine(ShowRate("OOPS!", new Color(255f/255f, 0, 110f/255f)));
+        }
+        // UpdateScore();
     }
 
     void CreateRow()
