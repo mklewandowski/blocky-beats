@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Globals
 {
+    public static bool AudioOn = true;
+
     public enum GameStates {
         Title,
         Playing
