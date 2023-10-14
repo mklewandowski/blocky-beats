@@ -165,7 +165,7 @@ public class DDRGameManager : MonoBehaviour
             }
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
-    }
+        }
         else
         {
             incorrect++;
