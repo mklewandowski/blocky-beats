@@ -34,6 +34,13 @@ public class DDRGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        PlayGame();
+    }
+
+    void PlayGame()
+    {
+        if (Globals.CurrentGameState != Globals.GameStates.Playing)
+            return;
         HandleInput();
         MoveRows();
         HandleRowCreation();
@@ -87,6 +94,7 @@ public class DDRGameManager : MonoBehaviour
         StartContainer.GetComponent<MoveNormal>().MoveDown();   
         PlayButtons.GetComponent<MoveNormal>().MoveUp();   
         PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        Globals.CurrentGameState = Globals.GameStates.Playing;
     }
 
     public void SelectUp()
@@ -111,7 +119,7 @@ public class DDRGameManager : MonoBehaviour
         GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
         RectTransform rt = row.GetComponent<RectTransform>();
         rt.anchoredPosition = new Vector2(0, rt.anchoredPosition.y);
-        Globals.Orientation newOrientation = (Globals.Orientation)Random.Range(0, 4);
+        Globals.Orientations newOrientation = (Globals.Orientations)Random.Range(0, 4);
         row.GetComponent<Row>().SetArrow(newOrientation);
         row.GetComponent<Row>().Orientation = newOrientation;
         Rows.Add(row);
