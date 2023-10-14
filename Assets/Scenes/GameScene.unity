@@ -2118,7 +2118,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Orientation: 0
   InHitZone: 0
+  CurrentScoreQuality: 0
   Arrows: []
+  Good: []
+  Great: []
+  Perfect: []
 --- !u!224 &1656746477
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2612,7 +2616,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10, y: -40}
+  m_AnchoredPosition: {x: 10, y: -30}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2018264567
@@ -2635,11 +2639,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Correct: 0
+  m_text: 'Good: 0
+
+    Great: 0
+
+    Perfect: 0
 
     Incorrect: 0
 
-    Missed: 0'
+    Missed:
+    0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9e45347d35d9ba9439cea315ae2c697c, type: 2}
   m_sharedMaterial: {fileID: -7309626129983707151, guid: 9e45347d35d9ba9439cea315ae2c697c, type: 2}

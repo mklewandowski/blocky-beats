@@ -32,9 +32,15 @@ public class DDRGameManager : MonoBehaviour
 
     Coroutine RateCoroutine;
 
-    int correct = 0;
+    int good = 0;
+    int great = 0;
+    int perfect = 0;
     int incorrect = 0;
     int missed = 0;
+    float inGoodThreshold = 70f;
+    float inGreatThreshold = 83f;
+    float inPerfectThreshold = 96f;
+    float destroyThreshold = 103f;
 
     // Start is called before the first frame update
     void Start()
@@ -65,11 +71,20 @@ public class DDRGameManager : MonoBehaviour
         {
             float speed = 100f;
             r.transform.localPosition = new Vector3(r.transform.localPosition.x, r.transform.localPosition.y + speed * Time.deltaTime, r.transform.localPosition.z);
-            if (r.transform.localPosition.y > 70f)
+            Row row = r.GetComponent<Row>();
+            if (r.transform.localPosition.y >= inGoodThreshold && r.transform.localPosition.y < inGreatThreshold && row.CurrentScoreQuality != Globals.ScoreQualities.Good)
             {
-                r.GetComponent<Row>().InHitZone = true;
+                r.GetComponent<Row>().SetGood();
             }
-            if (r.transform.localPosition.y > 103f)
+            else if (r.transform.localPosition.y >= inGreatThreshold && r.transform.localPosition.y < inPerfectThreshold && row.CurrentScoreQuality != Globals.ScoreQualities.Great)
+            {
+                r.GetComponent<Row>().SetGreat();
+            }
+            else if (r.transform.localPosition.y >= inPerfectThreshold && r.transform.localPosition.y < destroyThreshold && row.CurrentScoreQuality != Globals.ScoreQualities.Perfect)
+            {
+                r.GetComponent<Row>().SetPerfect();
+            }
+            else if (r.transform.localPosition.y >= destroyThreshold)
             {
                 deleteFirst = true;
             }
@@ -147,14 +162,29 @@ public class DDRGameManager : MonoBehaviour
 
     void VetInput(Globals.Orientations inputOrientation)
     {
-        if (Rows.Count > 0 && Rows[0].GetComponent<Row>().InHitZone)
+        if (Rows.Count > 0 && Rows[0].GetComponent<Row>().CurrentScoreQuality != Globals.ScoreQualities.Invalid)
         {
             if (Rows[0].GetComponent<Row>().Orientation == inputOrientation)
             {
-                correct++;
+                if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Good)
+                {
+                    good++;
+                    if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+                    RateCoroutine = StartCoroutine(ShowRate("GOOD!", Color.yellow));
+                }
+                else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Great)
+                {
+                    great++;
+                    if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+                    RateCoroutine = StartCoroutine(ShowRate("GREAT!", Color.yellow));
+                }
+                else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Perfect)
+                {
+                    perfect++;
+                    if (RateCoroutine != null) StopCoroutine(RateCoroutine);
+                    RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", Color.yellow));
+                }
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, Color.yellow, .15f, .3f));
-                if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                RateCoroutine = StartCoroutine(ShowRate("GREAT!", Color.yellow));
             }
             else 
             {
@@ -188,7 +218,9 @@ public class DDRGameManager : MonoBehaviour
 
     void UpdateScore()
     {
-        Score.text = "Correct: " + correct + "\n";
+        Score.text = "Good: " + good + "\n";
+        Score.text = "Great: " + great + "\n";
+        Score.text = "Perfect: " + perfect + "\n";
         Score.text += "Incorrect: " + incorrect + "\n";
         Score.text += "Missed: " + missed + "\n";
     }

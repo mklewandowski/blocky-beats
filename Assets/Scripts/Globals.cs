@@ -9,6 +9,7 @@ public class Globals
         Playing
     }
     public static GameStates CurrentGameState = GameStates.Title;
+
     public enum Orientations {
         Left,
         Down,
@@ -17,4 +18,10 @@ public class Globals
         None,
     }
 
+    public enum ScoreQualities {
+        Invalid,
+        Good,
+        Great,
+        Perfect
+    }
 }
