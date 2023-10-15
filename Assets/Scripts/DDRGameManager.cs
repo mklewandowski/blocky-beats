@@ -35,6 +35,12 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI RateText;
     [SerializeField]
     TextMeshProUGUI RateRearText;
+    [SerializeField]
+    GameObject Combo;
+    [SerializeField]
+    TextMeshProUGUI ComboText;
+    [SerializeField]
+    TextMeshProUGUI ComboRearText;
 
     Coroutine RateCoroutine;
 
@@ -43,6 +49,7 @@ public class DDRGameManager : MonoBehaviour
     int perfect = 0;
     int incorrect = 0;
     int missed = 0;
+    int combo = 0;
     float inGoodThreshold = 70f;
     float inGreatThreshold = 83f;
     float inPerfectThreshold = 96f;
@@ -108,6 +115,8 @@ public class DDRGameManager : MonoBehaviour
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
             RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", badColor));
             missed++;
+            combo = 0;
+            HideCombo();
             UpdateScore();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
@@ -187,18 +196,27 @@ public class DDRGameManager : MonoBehaviour
                     good++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
                     RateCoroutine = StartCoroutine(ShowRate("GOOD!", goodColor));
+                    combo++;
+                    if (combo > 1)
+                        ShowCombo();
                 }
                 else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Great)
                 {
                     great++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
                     RateCoroutine = StartCoroutine(ShowRate("GREAT!", goodColor));
+                    combo++;
+                    if (combo > 1)
+                        ShowCombo();
                 }
                 else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Perfect)
                 {
                     perfect++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
                     RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", goodColor));
+                    combo++;
+                    if (combo > 1)
+                        ShowCombo();
                 }
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, Color.yellow, .15f, .3f));
             }
@@ -208,6 +226,8 @@ public class DDRGameManager : MonoBehaviour
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
                 if (RateCoroutine != null) StopCoroutine(RateCoroutine);
                 RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+                combo = 0;
+                HideCombo();
             }
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
@@ -217,8 +237,24 @@ public class DDRGameManager : MonoBehaviour
             incorrect++;
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
             RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+            combo = 0;
+            HideCombo();
         }
         UpdateScore();
+    }
+
+    void ShowCombo()
+    {
+        ComboText.text = combo.ToString();
+        ComboRearText.text = combo.ToString();
+        Combo.transform.localScale = new Vector3(.1f, .1f, .1f);
+        Combo.SetActive(true);
+        Combo.GetComponent<GrowAndShrink>().StartEffect();
+    }
+
+    void HideCombo()
+    {
+        Combo.SetActive(false);
     }
 
     void CreateRow()
