@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.InteropServices;
 
 public class DDRGameManager : MonoBehaviour
 {
+    AudioManager audioManager;
     [SerializeField]
     GameObject Title;
     [SerializeField]
@@ -29,6 +31,10 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI Score;
     [SerializeField]
     GameObject Rate;
+    [SerializeField]
+    TextMeshProUGUI RateText;
+    [SerializeField]
+    TextMeshProUGUI RateRearText;
 
     Coroutine RateCoroutine;
 
@@ -41,6 +47,14 @@ public class DDRGameManager : MonoBehaviour
     float inGreatThreshold = 83f;
     float inPerfectThreshold = 96f;
     float destroyThreshold = 103f;
+
+    Color goodColor = new Color(239f/255f, 210f/255f, 153f/255f);
+    Color badColor = new Color(195f/255f, 93f/255f, 93f/255f);
+
+    void Awake()
+    {
+        audioManager = this.GetComponent<AudioManager>();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -92,7 +106,7 @@ public class DDRGameManager : MonoBehaviour
         if (deleteFirst)
         {
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", new Color(255f/255f, 0, 110f/255f)));
+            RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", badColor));
             missed++;
             UpdateScore();
             Destroy(Rows[0]);
@@ -112,6 +126,8 @@ public class DDRGameManager : MonoBehaviour
 
     public void StartGame()
     {      
+        audioManager.StopMusic();
+        audioManager.PlayButtonSound();
         Title.GetComponent<MoveNormal>().MoveUp();
         StartContainer.GetComponent<MoveNormal>().MoveDown();   
         PlayButtons.GetComponent<MoveNormal>().MoveUp();   
@@ -170,19 +186,19 @@ public class DDRGameManager : MonoBehaviour
                 {
                     good++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GOOD!", Color.yellow));
+                    RateCoroutine = StartCoroutine(ShowRate("GOOD!", goodColor));
                 }
                 else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Great)
                 {
                     great++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GREAT!", Color.yellow));
+                    RateCoroutine = StartCoroutine(ShowRate("GREAT!", goodColor));
                 }
                 else if (Rows[0].GetComponent<Row>().CurrentScoreQuality == Globals.ScoreQualities.Perfect)
                 {
                     perfect++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", Color.yellow));
+                    RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", goodColor));
                 }
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, Color.yellow, .15f, .3f));
             }
@@ -191,7 +207,7 @@ public class DDRGameManager : MonoBehaviour
                 incorrect++;
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
                 if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                RateCoroutine = StartCoroutine(ShowRate("OOPS!", new Color(255f/255f, 0, 110f/255f)));
+                RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
             }
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
@@ -200,7 +216,7 @@ public class DDRGameManager : MonoBehaviour
         {
             incorrect++;
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("OOPS!", new Color(255f/255f, 0, 110f/255f)));
+            RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
         }
         UpdateScore();
     }
@@ -254,8 +270,9 @@ public class DDRGameManager : MonoBehaviour
     IEnumerator ShowRate (string text, Color c)
     {
         float maxTime = .7f;
-        Rate.GetComponent<TextMeshProUGUI>().color = c;
-        Rate.GetComponent<TextMeshProUGUI>().text = text;
+        RateText.color = c;
+        RateText.text = text;
+        RateRearText.text = text;
         Rate.transform.localScale = new Vector3(.1f, .1f, .1f);
         Rate.SetActive(true);
         Rate.GetComponent<GrowAndShrink>().StartEffect();
