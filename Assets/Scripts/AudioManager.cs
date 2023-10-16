@@ -12,6 +12,14 @@ public class AudioManager : MonoBehaviour
     [SerializeField]
     AudioClip ButtonSound;
 
+    [SerializeField]
+    AudioClip CompleteSound;
+
+    [SerializeField]
+    AudioClip[] LevelMusic;
+    [SerializeField]
+    AudioClip[] ClickSounds = new AudioClip[4];
+
     void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
@@ -19,8 +27,10 @@ public class AudioManager : MonoBehaviour
         audioSource = this.GetComponent<AudioSource>();
     }
 
-    public void StartMusic()
+    public void StartMusic(int levelNum)
     {
+        audioSource.clip = LevelMusic[levelNum];
+        audioSource.loop = false;
         audioSource.Play();
     }
     public void StopMusic()
@@ -38,5 +48,17 @@ public class AudioManager : MonoBehaviour
     {
         if (Globals.AudioOn)
             audioSource.PlayOneShot(ButtonSound, 1f);
+    }
+
+    public void PlayCompleteSound()
+    {
+        if (Globals.AudioOn)
+            audioSource.PlayOneShot(CompleteSound, 1f);   
+    }
+    
+    public void PlayClickSound()
+    {
+        int num = Random.Range(0, ClickSounds.Length - 1);
+        audioSource.PlayOneShot(ClickSounds[num], .5f);
     }
 }

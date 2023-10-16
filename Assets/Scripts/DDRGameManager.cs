@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public class DDRGameManager : MonoBehaviour
 {
@@ -24,9 +25,6 @@ public class DDRGameManager : MonoBehaviour
     GameObject RowPrefab;
     [SerializeField]
     GameObject RowContainer;
-    List<GameObject> Rows = new List<GameObject>();
-    float rowTimer = 2f;
-    float rowTimerMax = 1.0f;
     [SerializeField]
     TextMeshProUGUI Score;
     [SerializeField]
@@ -41,13 +39,27 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI ComboText;
     [SerializeField]
     TextMeshProUGUI ComboRearText;
+    [SerializeField]
+    GameObject LevelComplete;
+    [SerializeField]
+    GameObject LevelStats;
+    [SerializeField]
+    GameObject LevelStatsText;
+    [SerializeField]
+    GameObject LevelScore;
+    [SerializeField]
+    GameObject LevelScorePercent;
+    [SerializeField]
+    GameObject EndLevelButtons;
 
     Coroutine RateCoroutine;
 
+    int maxPoints = 0;
     int good = 0;
     int great = 0;
     int perfect = 0;
     int incorrect = 0;
+    int invalid = 0;
     int missed = 0;
     int combo = 0;
     float inGoodThreshold = 70f;
@@ -55,12 +67,27 @@ public class DDRGameManager : MonoBehaviour
     float inPerfectThreshold = 96f;
     float destroyThreshold = 103f;
 
-    Color goodColor = new Color(239f/255f, 210f/255f, 153f/255f);
-    Color badColor = new Color(195f/255f, 93f/255f, 93f/255f);
+    Color goodColor = new Color(255f/255f, 216f/255f, 0/255f);
+    Color badColor = new Color(255f/255f, 0, 110f/255f);
+
+    List<GameObject> Rows = new List<GameObject>();
+    float rowTimer = 0;
+    float rowTimerMax = 0;
+    int levelNum = 0;
+    float levelDelay = 2f;
+    int rowIndex = 0;
+    float endLevelDelay = 3f;
+    float statsDelay = 1.5f;
+    float scoreDelay = 0;
+
+    float gameTime = 0;
+    string levelStatsString = "";
 
     void Awake()
     {
         audioManager = this.GetComponent<AudioManager>();
+
+        Globals.CreateLevels();
     }
 
     // Start is called before the first frame update
@@ -74,18 +101,98 @@ public class DDRGameManager : MonoBehaviour
     void Update()
     {
         PlayGame();
+        EndLevel();
+        Stats();
     }
 
     void PlayGame()
     {
         if (Globals.CurrentGameState != Globals.GameStates.Playing)
             return;
-        HandleInput();
         MoveRows();
+        HandleMusic();
+        HandleInput();
         HandleRowCreation();
+        gameTime += Time.deltaTime;
     }
 
-    public void MoveRows()
+    void EndLevel()
+    {
+        if (Globals.CurrentGameState != Globals.GameStates.LevelComplete)
+            return;
+        MoveRows();
+        HideLevelComplete();
+    }
+
+    void Stats()
+    {
+        if (Globals.CurrentGameState != Globals.GameStates.Stats)
+            return;
+        ShowStats();
+    }
+
+    void ShowStats()
+    {
+        if (statsDelay > 0)
+        {
+            statsDelay -= Time.deltaTime;
+            if (statsDelay <= 0)
+            {
+                LevelStatsText.GetComponent<TypewriterUI>().StartEffect("", levelStatsString);
+                scoreDelay = 2f;
+            }
+        }  
+        if (scoreDelay > 0)
+        {
+            scoreDelay -= Time.deltaTime;
+            if (scoreDelay <= 0)
+            {
+                LevelScore.transform.localScale = new Vector3(.1f, .1f, .1f);
+                LevelScore.SetActive(true);
+                LevelScore.GetComponent<GrowAndShrink>().StartEffect();
+
+                float finalScore = CalculateFinalScore();
+                LevelScorePercent.GetComponent<TextMeshProUGUI>().text = finalScore.ToString("0") + "%";
+                LevelScorePercent.transform.localScale = new Vector3(.1f, .1f, .1f);
+                LevelScorePercent.SetActive(true);
+                LevelScorePercent.GetComponent<GrowAndShrink>().StartEffect();
+                EndLevelButtons.GetComponent<MoveNormal>().MoveUp();
+                audioManager.PlayCompleteSound();
+            }
+        }   
+    }
+
+    void HideLevelComplete()
+    {
+        if (endLevelDelay > 0)
+        {
+            endLevelDelay -= Time.deltaTime;
+            if (endLevelDelay <= 0)
+            {
+                PlayButtons.GetComponent<MoveNormal>().MoveDown();   
+                PlayField.GetComponent<MoveNormal>().MoveUp(); 
+                LevelStats.GetComponent<MoveNormal>().MoveUp();   
+                LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
+                LevelScore.SetActive(false);
+                LevelScorePercent.SetActive(false);
+                Globals.CurrentGameState = Globals.GameStates.Stats;
+            }
+        }
+    }
+
+    void HandleMusic()
+    {
+        if (levelDelay > 0)
+        {
+            levelDelay -= Time.deltaTime;
+            if (levelDelay <= 0)
+            {
+                audioManager.StartMusic(levelNum);
+            }
+        }
+    }
+
+    void MoveRows()
     {
         bool deleteFirst = false;
         foreach (GameObject r in Rows)
@@ -113,11 +220,13 @@ public class DDRGameManager : MonoBehaviour
         if (deleteFirst)
         {
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", badColor));
+            RateCoroutine = StartCoroutine(ShowRate("MISS", badColor));
             missed++;
             combo = 0;
             HideCombo();
             UpdateScore();
+            if (Rows[0].GetComponent<Row>().IsLast)
+                CompleteLevel();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
@@ -141,25 +250,46 @@ public class DDRGameManager : MonoBehaviour
         StartContainer.GetComponent<MoveNormal>().MoveDown();   
         PlayButtons.GetComponent<MoveNormal>().MoveUp();   
         PlayField.GetComponent<MoveNormal>().MoveDown(); 
-        Globals.CurrentGameState = Globals.GameStates.Playing;
+        StartLevel();
     }
+
+    public void StartLevel()
+    {
+        rowTimerMax = Globals.Levels[levelNum].TimeInterval;
+        Globals.CurrentGameState = Globals.GameStates.Playing;
+        rowTimer = Globals.Levels[levelNum].TimeInterval * 2f;
+        levelDelay = Globals.Levels[levelNum].TimeInterval * 2f;
+        endLevelDelay = 3f;
+        statsDelay = 1.5f;
+        rowIndex = 0;
+        incorrect = 0;
+        invalid = 0;
+        missed = 0;
+        good = 0;
+        great = 0;
+        perfect = 0;
+        combo = 0;
+        maxPoints = 0;
+        HideCombo();
+        LevelComplete.SetActive(false);
+   }
 
     public void HandleInput()
     {
         Globals.Orientations inputOrientation = Globals.Orientations.None;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown("a"))
         {
             inputOrientation = Globals.Orientations.Left;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown("d"))
         {
             inputOrientation = Globals.Orientations.Right;
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown("w"))
         {
             inputOrientation = Globals.Orientations.Up;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown("s"))
         {
             inputOrientation = Globals.Orientations.Down;
         }
@@ -184,9 +314,10 @@ public class DDRGameManager : MonoBehaviour
         VetInput(Globals.Orientations.Right);
     }
 
-
     void VetInput(Globals.Orientations inputOrientation)
     {
+        if (Globals.CurrentGameState != Globals.GameStates.Playing)
+            return;
         if (Rows.Count > 0 && Rows[0].GetComponent<Row>().CurrentScoreQuality != Globals.ScoreQualities.Invalid)
         {
             if (Rows[0].GetComponent<Row>().Orientation == inputOrientation)
@@ -195,7 +326,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     good++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GOOD!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("GOOD", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -204,7 +335,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     great++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GREAT!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("GREAT", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -213,7 +344,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     perfect++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("PERFECT", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -223,20 +354,22 @@ public class DDRGameManager : MonoBehaviour
             else 
             {
                 incorrect++;
-                StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
+                StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, badColor, .15f, .3f));
                 if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+                RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
                 combo = 0;
                 HideCombo();
             }
+            if (Rows[0].GetComponent<Row>().IsLast)
+                CompleteLevel();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
         else
         {
-            incorrect++;
+            invalid++;
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+            RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
             combo = 0;
             HideCombo();
         }
@@ -259,13 +392,45 @@ public class DDRGameManager : MonoBehaviour
 
     void CreateRow()
     {
-        GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
-        RectTransform rt = row.GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(0, rt.anchoredPosition.y);
-        Globals.Orientations newOrientation = (Globals.Orientations)Random.Range(0, 4);
-        row.GetComponent<Row>().SetArrow(newOrientation);
-        row.GetComponent<Row>().Orientation = newOrientation;
-        Rows.Add(row);
+        if (rowIndex >= Globals.Levels[levelNum].Orientations.Count)
+            return;
+        Globals.Orientations newOrientation = (Globals.Orientations)Globals.Levels[levelNum].Orientations[rowIndex];
+        
+        if (newOrientation != Globals.Orientations.None)
+        {
+            GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
+            RectTransform rt = row.GetComponent<RectTransform>();
+            rt.anchoredPosition = new Vector2(0, rt.anchoredPosition.y);
+            rt.transform.localPosition = new Vector3(rt.transform.localPosition.x, -200f, rt.transform.localPosition.z);
+            row.GetComponent<Row>().SetArrow(newOrientation);
+            row.GetComponent<Row>().Orientation = newOrientation;
+            if (rowIndex >= Globals.Levels[levelNum].Orientations.Count - 1)
+            {
+                row.GetComponent<Row>().IsLast = true;
+            }
+            Rows.Add(row);
+            maxPoints+= 10;
+        }
+        rowIndex++;
+    }
+
+    void CompleteLevel()
+    {
+        Globals.CurrentGameState = Globals.GameStates.LevelComplete;
+        LevelComplete.transform.localScale = new Vector3(.1f, .1f, .1f);
+        LevelComplete.SetActive(true);
+        LevelComplete.GetComponent<GrowAndShrink>().StartEffect();
+        audioManager.PlayCompleteSound();
+
+        // prepare stats
+        LevelScore.SetActive(false);
+        LevelScorePercent.SetActive(false);
+        LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
+        levelStatsString = "Good: " + good + "\n";
+        levelStatsString += "Great: " + great + "\n";
+        levelStatsString += "Perfect: " + perfect + "\n";
+        levelStatsString += "Incorrect: " + (incorrect + invalid) + "\n";
+        levelStatsString += "Missed: " + missed + "\n";
     }
 
     void UpdateScore()
@@ -273,8 +438,18 @@ public class DDRGameManager : MonoBehaviour
         Score.text = "Good: " + good + "\n";
         Score.text += "Great: " + great + "\n";
         Score.text += "Perfect: " + perfect + "\n";
-        Score.text += "Incorrect: " + incorrect + "\n";
+        Score.text += "Incorrect: " + (incorrect + invalid) + "\n";
         Score.text += "Missed: " + missed + "\n";
+    }
+
+    float CalculateFinalScore()
+    {
+        int finalPoints = perfect * 10;
+        finalPoints += great * 9;
+        finalPoints += good * 8;
+        finalPoints -= invalid * 5;
+        finalPoints = Mathf.Max(0, finalPoints);
+        return (float)finalPoints/(float)maxPoints * 100f;
     }
 
     IEnumerator ShowHighlight(Globals.Orientations o, Color c, float inTime, float outTime)
@@ -318,5 +493,27 @@ public class DDRGameManager : MonoBehaviour
             yield return null; 
         }
         Rate.SetActive(false);
+    }
+
+    public void SelectTryAgain()
+    {
+        audioManager.PlayCompleteSound();
+        EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
+        LevelStats.GetComponent<MoveNormal>().MoveDown();  
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
+        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        StartLevel();
+    }
+    public void SelectNextLevel()
+    {
+        levelNum++;
+        if (levelNum >= Globals.Levels.Count)
+            levelNum = 0;
+        audioManager.PlayCompleteSound();
+        EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
+        LevelStats.GetComponent<MoveNormal>().MoveDown();  
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
+        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        StartLevel();
     }
 }
