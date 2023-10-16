@@ -17,6 +17,8 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField]
     AudioClip[] LevelMusic;
+    [SerializeField]
+    AudioClip[] ClickSounds = new AudioClip[4];
 
     void Awake()
     {
@@ -52,5 +54,11 @@ public class AudioManager : MonoBehaviour
     {
         if (Globals.AudioOn)
             audioSource.PlayOneShot(CompleteSound, 1f);   
+    }
+    
+    public void PlayClickSound()
+    {
+        int num = Random.Range(0, ClickSounds.Length - 1);
+        audioSource.PlayOneShot(ClickSounds[num], .5f);
     }
 }

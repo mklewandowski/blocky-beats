@@ -34,10 +34,10 @@ public class Globals
     {
         int[] level1Orientations = { // 3 seconds for first to hit
             2, 2, 1, 0, 1, 2, 3, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 2,
+            // 0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            // 0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            // 0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            // 0, 1, 2, 3, 0, 1, 2, 2,
         };
         Level level1 = new Level(1f, level1Orientations);
         Levels.Add(level1);

@@ -1400,6 +1400,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  ClickSounds:
+  - {fileID: 8300000, guid: 8c04171ca0a9b8f42abe2141f72fbf51, type: 3}
+  - {fileID: 8300000, guid: ad3ab4d726eb8d2468b85332198c1bda, type: 3}
+  - {fileID: 8300000, guid: 488a3ca3cdef45a4fbd0f798e7794dae, type: 3}
+  - {fileID: 8300000, guid: 324e665b1ba316240b5afdfe524a209e, type: 3}
 --- !u!1 &749558409
 GameObject:
   m_ObjectHideFlags: 0
@@ -4865,6 +4870,7 @@ GameObject:
   - component: {fileID: 2120703607}
   - component: {fileID: 2120703609}
   - component: {fileID: 2120703608}
+  - component: {fileID: 2120703610}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -4989,6 +4995,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2120703606}
   m_CullTransparentMesh: 1
+--- !u!114 &2120703610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120703606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306279a1c1ef9d8439aa6b2fb5ffa620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PersonTalkAnimationFrames: []
+  PersonTalk: {fileID: 0}
 --- !u!1 &2121236472
 GameObject:
   m_ObjectHideFlags: 0

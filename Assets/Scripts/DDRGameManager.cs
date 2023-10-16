@@ -44,7 +44,7 @@ public class DDRGameManager : MonoBehaviour
     [SerializeField]
     GameObject LevelStats;
     [SerializeField]
-    TextMeshProUGUI LevelStatsText;
+    GameObject LevelStatsText;
     [SerializeField]
     GameObject LevelScore;
     [SerializeField]
@@ -73,6 +73,7 @@ public class DDRGameManager : MonoBehaviour
     float levelDelay = 2f;
     int rowIndex = 0;
     float endLevelDelay = 3f;
+    float statsDelay = 1.5f;
 
     float gameTime = 0;
     string levelStatsString = "";
@@ -96,6 +97,7 @@ public class DDRGameManager : MonoBehaviour
     {
         PlayGame();
         EndLevel();
+        Stats();
     }
 
     void PlayGame()
@@ -117,6 +119,25 @@ public class DDRGameManager : MonoBehaviour
         HideLevelComplete();
     }
 
+    void Stats()
+    {
+        if (Globals.CurrentGameState != Globals.GameStates.Stats)
+            return;
+        ShowStats();
+    }
+
+    void ShowStats()
+    {
+        if (statsDelay > 0)
+        {
+            statsDelay -= Time.deltaTime;
+            if (statsDelay <= 0)
+            {
+                LevelStatsText.GetComponent<TypewriterUI>().StartEffect("", levelStatsString);
+            }
+        }   
+    }
+
     void HideLevelComplete()
     {
         if (endLevelDelay > 0)
@@ -127,6 +148,7 @@ public class DDRGameManager : MonoBehaviour
                 PlayButtons.GetComponent<MoveNormal>().MoveDown();   
                 PlayField.GetComponent<MoveNormal>().MoveUp(); 
                 LevelStats.GetComponent<MoveNormal>().MoveDown();   
+                Globals.CurrentGameState = Globals.GameStates.Stats;
             }
         }
     }
@@ -361,7 +383,7 @@ public class DDRGameManager : MonoBehaviour
         // prepare stats
         LevelScore.SetActive(false);
         LevelScorePercent.SetActive(false);
-        LevelStatsText.text = "";
+        LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
         levelStatsString = "Good: " + good + "\n";
         levelStatsString += "Great: " + great + "\n";
         levelStatsString += "Perfect: " + perfect + "\n";
