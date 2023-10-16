@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public class DDRGameManager : MonoBehaviour
 {
@@ -40,6 +41,14 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI ComboRearText;
     [SerializeField]
     GameObject LevelComplete;
+    [SerializeField]
+    GameObject LevelStats;
+    [SerializeField]
+    TextMeshProUGUI LevelStatsText;
+    [SerializeField]
+    GameObject LevelScore;
+    [SerializeField]
+    GameObject LevelScorePercent;
 
     Coroutine RateCoroutine;
 
@@ -54,8 +63,8 @@ public class DDRGameManager : MonoBehaviour
     float inPerfectThreshold = 96f;
     float destroyThreshold = 103f;
 
-    Color goodColor = new Color(239f/255f, 210f/255f, 153f/255f);
-    Color badColor = new Color(195f/255f, 93f/255f, 93f/255f);
+    Color goodColor = new Color(255f/255f, 216f/255f, 0/255f);
+    Color badColor = new Color(255f/255f, 0/255f, 0/255f);
 
     List<GameObject> Rows = new List<GameObject>();
     float rowTimer = 2f;
@@ -63,8 +72,10 @@ public class DDRGameManager : MonoBehaviour
     int levelNum = 0;
     float levelDelay = 2f;
     int rowIndex = 0;
+    float endLevelDelay = 3f;
 
     float gameTime = 0;
+    string levelStatsString = "";
 
     void Awake()
     {
@@ -84,17 +95,40 @@ public class DDRGameManager : MonoBehaviour
     void Update()
     {
         PlayGame();
+        EndLevel();
     }
 
     void PlayGame()
     {
-        MoveRows();
         if (Globals.CurrentGameState != Globals.GameStates.Playing)
             return;
+        MoveRows();
         HandleMusic();
         HandleInput();
         HandleRowCreation();
         gameTime += Time.deltaTime;
+    }
+
+    void EndLevel()
+    {
+        if (Globals.CurrentGameState != Globals.GameStates.LevelComplete)
+            return;
+        MoveRows();
+        HideLevelComplete();
+    }
+
+    void HideLevelComplete()
+    {
+        if (endLevelDelay > 0)
+        {
+            endLevelDelay -= Time.deltaTime;
+            if (endLevelDelay <= 0)
+            {
+                PlayButtons.GetComponent<MoveNormal>().MoveDown();   
+                PlayField.GetComponent<MoveNormal>().MoveUp(); 
+                LevelStats.GetComponent<MoveNormal>().MoveDown();   
+            }
+        }
     }
 
     void HandleMusic()
@@ -323,6 +357,16 @@ public class DDRGameManager : MonoBehaviour
         LevelComplete.SetActive(true);
         LevelComplete.GetComponent<GrowAndShrink>().StartEffect();
         audioManager.PlayCompleteSound();
+
+        // prepare stats
+        LevelScore.SetActive(false);
+        LevelScorePercent.SetActive(false);
+        LevelStatsText.text = "";
+        levelStatsString = "Good: " + good + "\n";
+        levelStatsString += "Great: " + great + "\n";
+        levelStatsString += "Perfect: " + perfect + "\n";
+        levelStatsString += "Incorrect: " + incorrect + "\n";
+        levelStatsString += "Missed: " + missed + "\n";
     }
 
     void UpdateScore()
