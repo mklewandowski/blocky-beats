@@ -277,19 +277,19 @@ public class DDRGameManager : MonoBehaviour
     public void HandleInput()
     {
         Globals.Orientations inputOrientation = Globals.Orientations.None;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown("a"))
         {
             inputOrientation = Globals.Orientations.Left;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown("d"))
         {
             inputOrientation = Globals.Orientations.Right;
         }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown("w"))
         {
             inputOrientation = Globals.Orientations.Up;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown("s"))
         {
             inputOrientation = Globals.Orientations.Down;
         }
