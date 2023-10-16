@@ -50,16 +50,16 @@ public class DDRGameManager : MonoBehaviour
     [SerializeField]
     GameObject LevelScorePercent;
     [SerializeField]
-    GameObject TryAgain;
-    [SerializeField]
-    GameObject NextLevel;
+    GameObject EndLevelButtons;
 
     Coroutine RateCoroutine;
 
+    int maxPoints = 0;
     int good = 0;
     int great = 0;
     int perfect = 0;
     int incorrect = 0;
+    int invalid = 0;
     int missed = 0;
     int combo = 0;
     float inGoodThreshold = 70f;
@@ -78,6 +78,7 @@ public class DDRGameManager : MonoBehaviour
     int rowIndex = 0;
     float endLevelDelay = 3f;
     float statsDelay = 1.5f;
+    float scoreDelay = 0;
 
     float gameTime = 0;
     string levelStatsString = "";
@@ -138,6 +139,25 @@ public class DDRGameManager : MonoBehaviour
             if (statsDelay <= 0)
             {
                 LevelStatsText.GetComponent<TypewriterUI>().StartEffect("", levelStatsString);
+                scoreDelay = 2f;
+            }
+        }  
+        if (scoreDelay > 0)
+        {
+            scoreDelay -= Time.deltaTime;
+            if (scoreDelay <= 0)
+            {
+                LevelScore.transform.localScale = new Vector3(.1f, .1f, .1f);
+                LevelScore.SetActive(true);
+                LevelScore.GetComponent<GrowAndShrink>().StartEffect();
+
+                float finalScore = CalculateFinalScore();
+                LevelScorePercent.GetComponent<TextMeshProUGUI>().text = finalScore.ToString("0") + "%";
+                LevelScorePercent.transform.localScale = new Vector3(.1f, .1f, .1f);
+                LevelScorePercent.SetActive(true);
+                LevelScorePercent.GetComponent<GrowAndShrink>().StartEffect();
+                EndLevelButtons.GetComponent<MoveNormal>().MoveUp();
+                audioManager.PlayCompleteSound();
             }
         }   
     }
@@ -151,7 +171,10 @@ public class DDRGameManager : MonoBehaviour
             {
                 PlayButtons.GetComponent<MoveNormal>().MoveDown();   
                 PlayField.GetComponent<MoveNormal>().MoveUp(); 
-                LevelStats.GetComponent<MoveNormal>().MoveDown();   
+                LevelStats.GetComponent<MoveNormal>().MoveUp();   
+                LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
+                LevelScore.SetActive(false);
+                LevelScorePercent.SetActive(false);
                 Globals.CurrentGameState = Globals.GameStates.Stats;
             }
         }
@@ -236,7 +259,19 @@ public class DDRGameManager : MonoBehaviour
         Globals.CurrentGameState = Globals.GameStates.Playing;
         rowTimer = 2f;
         levelDelay = 2f;
+        endLevelDelay = 3f;
+        statsDelay = 1.5f;
         rowIndex = 0;
+        incorrect = 0;
+        invalid = 0;
+        missed = 0;
+        good = 0;
+        great = 0;
+        perfect = 0;
+        combo = 0;
+        maxPoints = 0;
+        HideCombo();
+        LevelComplete.SetActive(false);
    }
 
     public void HandleInput()
@@ -330,7 +365,7 @@ public class DDRGameManager : MonoBehaviour
         }
         else
         {
-            incorrect++;
+            invalid++;
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
             RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
             combo = 0;
@@ -372,6 +407,7 @@ public class DDRGameManager : MonoBehaviour
                 row.GetComponent<Row>().IsLast = true;
             }
             Rows.Add(row);
+            maxPoints+= 10;
         }
         rowIndex++;
     }
@@ -391,7 +427,7 @@ public class DDRGameManager : MonoBehaviour
         levelStatsString = "Good: " + good + "\n";
         levelStatsString += "Great: " + great + "\n";
         levelStatsString += "Perfect: " + perfect + "\n";
-        levelStatsString += "Incorrect: " + incorrect + "\n";
+        levelStatsString += "Incorrect: " + (incorrect + invalid) + "\n";
         levelStatsString += "Missed: " + missed + "\n";
     }
 
@@ -400,8 +436,18 @@ public class DDRGameManager : MonoBehaviour
         Score.text = "Good: " + good + "\n";
         Score.text += "Great: " + great + "\n";
         Score.text += "Perfect: " + perfect + "\n";
-        Score.text += "Incorrect: " + incorrect + "\n";
+        Score.text += "Incorrect: " + (incorrect + invalid) + "\n";
         Score.text += "Missed: " + missed + "\n";
+    }
+
+    float CalculateFinalScore()
+    {
+        int finalPoints = perfect * 10;
+        finalPoints += great * 9;
+        finalPoints += good * 8;
+        finalPoints -= invalid * 5;
+        finalPoints = Mathf.Max(0, finalPoints);
+        return (float)finalPoints/(float)maxPoints * 100f;
     }
 
     IEnumerator ShowHighlight(Globals.Orientations o, Color c, float inTime, float outTime)
@@ -449,10 +495,20 @@ public class DDRGameManager : MonoBehaviour
 
     public void SelectTryAgain()
     {
-
+        audioManager.PlayCompleteSound();
+        EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
+        LevelStats.GetComponent<MoveNormal>().MoveDown();  
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
+        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        StartLevel();
     }
     public void SelectNextLevel()
     {
-        
+        audioManager.PlayCompleteSound();
+        EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
+        LevelStats.GetComponent<MoveNormal>().MoveDown();  
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
+        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        StartLevel();
     }
 }
