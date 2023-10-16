@@ -867,6 +867,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MenuSound: {fileID: 0}
   ButtonSound: {fileID: 8300000, guid: 02e8889928955ff4ab3cbe030551b3b1, type: 3}
+  LevelMusic:
+  - {fileID: 8300000, guid: 87b8ba05e1b5e5e4db30a0e12a12fa2b, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &749558409
 GameObject:
   m_ObjectHideFlags: 0
@@ -3535,8 +3540,7 @@ MonoBehaviour:
 
     Incorrect: 0
 
-    Missed:
-    0'
+    Missed: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9e45347d35d9ba9439cea315ae2c697c, type: 2}
   m_sharedMaterial: {fileID: -7309626129983707151, guid: 9e45347d35d9ba9439cea315ae2c697c, type: 2}

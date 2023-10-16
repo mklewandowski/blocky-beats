@@ -24,9 +24,6 @@ public class DDRGameManager : MonoBehaviour
     GameObject RowPrefab;
     [SerializeField]
     GameObject RowContainer;
-    List<GameObject> Rows = new List<GameObject>();
-    float rowTimer = 2f;
-    float rowTimerMax = 1.0f;
     [SerializeField]
     TextMeshProUGUI Score;
     [SerializeField]
@@ -58,9 +55,20 @@ public class DDRGameManager : MonoBehaviour
     Color goodColor = new Color(239f/255f, 210f/255f, 153f/255f);
     Color badColor = new Color(195f/255f, 93f/255f, 93f/255f);
 
+    List<GameObject> Rows = new List<GameObject>();
+    float rowTimer = 2f;
+    float rowTimerMax = 1.0f;
+    int levelNum = 0;
+    float levelDelay = 2f;
+    int rowIndex = 0;
+
+    float gameTime = 0;
+
     void Awake()
     {
         audioManager = this.GetComponent<AudioManager>();
+
+        Globals.CreateLevels();
     }
 
     // Start is called before the first frame update
@@ -80,12 +88,26 @@ public class DDRGameManager : MonoBehaviour
     {
         if (Globals.CurrentGameState != Globals.GameStates.Playing)
             return;
+        HandleMusic();
         HandleInput();
         MoveRows();
         HandleRowCreation();
+        gameTime += Time.deltaTime;
     }
 
-    public void MoveRows()
+    void HandleMusic()
+    {
+        if (levelDelay > 0)
+        {
+            levelDelay -= Time.deltaTime;
+            if (levelDelay <= 0)
+            {
+                audioManager.StartMusic(levelNum);
+            }
+        }
+    }
+
+    void MoveRows()
     {
         bool deleteFirst = false;
         foreach (GameObject r in Rows)
@@ -141,8 +163,17 @@ public class DDRGameManager : MonoBehaviour
         StartContainer.GetComponent<MoveNormal>().MoveDown();   
         PlayButtons.GetComponent<MoveNormal>().MoveUp();   
         PlayField.GetComponent<MoveNormal>().MoveDown(); 
-        Globals.CurrentGameState = Globals.GameStates.Playing;
+        StartLevel();
     }
+
+    public void StartLevel()
+    {
+        rowTimerMax = Globals.Levels[levelNum].TimeInterval;
+        Globals.CurrentGameState = Globals.GameStates.Playing;
+        rowTimer = 2f;
+        levelDelay = 2f;
+        rowIndex = 0;
+   }
 
     public void HandleInput()
     {
@@ -259,13 +290,19 @@ public class DDRGameManager : MonoBehaviour
 
     void CreateRow()
     {
-        GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
-        RectTransform rt = row.GetComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(0, rt.anchoredPosition.y);
-        Globals.Orientations newOrientation = (Globals.Orientations)Random.Range(0, 4);
-        row.GetComponent<Row>().SetArrow(newOrientation);
-        row.GetComponent<Row>().Orientation = newOrientation;
-        Rows.Add(row);
+        Globals.Orientations newOrientation = (Globals.Orientations)Globals.Levels[levelNum].Orientations[rowIndex];
+        
+        if (newOrientation != Globals.Orientations.None)
+        {
+            GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
+            RectTransform rt = row.GetComponent<RectTransform>();
+            rt.anchoredPosition = new Vector2(0, rt.anchoredPosition.y);
+            rt.transform.localPosition = new Vector3(rt.transform.localPosition.x, -200f, rt.transform.localPosition.z);
+            row.GetComponent<Row>().SetArrow(newOrientation);
+            row.GetComponent<Row>().Orientation = newOrientation;
+            Rows.Add(row);
+        }
+        rowIndex++;
     }
 
     void UpdateScore()

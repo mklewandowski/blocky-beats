@@ -26,4 +26,21 @@ public class Globals
         Great,
         Perfect
     }
+
+    public static List<Level> Levels = new List<Level>();
+    public static void CreateLevels()
+    {
+        int[] level1Orientations = {
+            4, 4, 4, 0, 1, 2, 3, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+        };
+        Level level1 = new Level(1f, level1Orientations);
+        Levels.Add(level1);
+
+    }
+    
 }
