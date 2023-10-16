@@ -316,6 +316,8 @@ public class DDRGameManager : MonoBehaviour
 
     void VetInput(Globals.Orientations inputOrientation)
     {
+        if (Globals.CurrentGameState != Globals.GameStates.Playing)
+            return;
         if (Rows.Count > 0 && Rows[0].GetComponent<Row>().CurrentScoreQuality != Globals.ScoreQualities.Invalid)
         {
             if (Rows[0].GetComponent<Row>().Orientation == inputOrientation)
