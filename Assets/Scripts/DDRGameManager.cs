@@ -49,6 +49,10 @@ public class DDRGameManager : MonoBehaviour
     GameObject LevelScore;
     [SerializeField]
     GameObject LevelScorePercent;
+    [SerializeField]
+    GameObject TryAgain;
+    [SerializeField]
+    GameObject NextLevel;
 
     Coroutine RateCoroutine;
 
@@ -64,7 +68,7 @@ public class DDRGameManager : MonoBehaviour
     float destroyThreshold = 103f;
 
     Color goodColor = new Color(255f/255f, 216f/255f, 0/255f);
-    Color badColor = new Color(255f/255f, 0/255f, 0/255f);
+    Color badColor = new Color(255f/255f, 0, 110f/255f);
 
     List<GameObject> Rows = new List<GameObject>();
     float rowTimer = 2f;
@@ -313,7 +317,7 @@ public class DDRGameManager : MonoBehaviour
             else 
             {
                 incorrect++;
-                StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
+                StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, badColor, .15f, .3f));
                 if (RateCoroutine != null) StopCoroutine(RateCoroutine);
                 RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
                 combo = 0;
@@ -441,5 +445,14 @@ public class DDRGameManager : MonoBehaviour
             yield return null; 
         }
         Rate.SetActive(false);
+    }
+
+    public void SelectTryAgain()
+    {
+
+    }
+    public void SelectNextLevel()
+    {
+        
     }
 }
