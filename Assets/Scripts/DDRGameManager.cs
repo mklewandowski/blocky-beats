@@ -71,8 +71,8 @@ public class DDRGameManager : MonoBehaviour
     Color badColor = new Color(255f/255f, 0, 110f/255f);
 
     List<GameObject> Rows = new List<GameObject>();
-    float rowTimer = 2f;
-    float rowTimerMax = 1.0f;
+    float rowTimer = 0;
+    float rowTimerMax = 0;
     int levelNum = 0;
     float levelDelay = 2f;
     int rowIndex = 0;
@@ -257,8 +257,8 @@ public class DDRGameManager : MonoBehaviour
     {
         rowTimerMax = Globals.Levels[levelNum].TimeInterval;
         Globals.CurrentGameState = Globals.GameStates.Playing;
-        rowTimer = 2f;
-        levelDelay = 2f;
+        rowTimer = Globals.Levels[levelNum].TimeInterval * 2f;
+        levelDelay = Globals.Levels[levelNum].TimeInterval * 2f;
         endLevelDelay = 3f;
         statsDelay = 1.5f;
         rowIndex = 0;
@@ -506,6 +506,9 @@ public class DDRGameManager : MonoBehaviour
     }
     public void SelectNextLevel()
     {
+        levelNum++;
+        if (levelNum >= Globals.Levels.Count)
+            levelNum = 0;
         audioManager.PlayCompleteSound();
         EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
         LevelStats.GetComponent<MoveNormal>().MoveDown();  
