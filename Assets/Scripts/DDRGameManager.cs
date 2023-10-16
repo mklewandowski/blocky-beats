@@ -38,6 +38,8 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI ComboText;
     [SerializeField]
     TextMeshProUGUI ComboRearText;
+    [SerializeField]
+    GameObject LevelComplete;
 
     Coroutine RateCoroutine;
 
@@ -86,11 +88,11 @@ public class DDRGameManager : MonoBehaviour
 
     void PlayGame()
     {
+        MoveRows();
         if (Globals.CurrentGameState != Globals.GameStates.Playing)
             return;
         HandleMusic();
         HandleInput();
-        MoveRows();
         HandleRowCreation();
         gameTime += Time.deltaTime;
     }
@@ -135,11 +137,13 @@ public class DDRGameManager : MonoBehaviour
         if (deleteFirst)
         {
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("MISSED IT!", badColor));
+            RateCoroutine = StartCoroutine(ShowRate("MISS", badColor));
             missed++;
             combo = 0;
             HideCombo();
             UpdateScore();
+            if (Rows[0].GetComponent<Row>().IsLast)
+                CompleteLevel();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
@@ -215,7 +219,6 @@ public class DDRGameManager : MonoBehaviour
         VetInput(Globals.Orientations.Right);
     }
 
-
     void VetInput(Globals.Orientations inputOrientation)
     {
         if (Rows.Count > 0 && Rows[0].GetComponent<Row>().CurrentScoreQuality != Globals.ScoreQualities.Invalid)
@@ -226,7 +229,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     good++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GOOD!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("GOOD", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -235,7 +238,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     great++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("GREAT!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("GREAT", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -244,7 +247,7 @@ public class DDRGameManager : MonoBehaviour
                 {
                     perfect++;
                     if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                    RateCoroutine = StartCoroutine(ShowRate("PERFECT!!", goodColor));
+                    RateCoroutine = StartCoroutine(ShowRate("PERFECT", goodColor));
                     combo++;
                     if (combo > 1)
                         ShowCombo();
@@ -256,10 +259,12 @@ public class DDRGameManager : MonoBehaviour
                 incorrect++;
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, new Color(255f/255f, 0, 110f/255f), .15f, .3f));
                 if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-                RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+                RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
                 combo = 0;
                 HideCombo();
             }
+            if (Rows[0].GetComponent<Row>().IsLast)
+                CompleteLevel();
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
@@ -267,7 +272,7 @@ public class DDRGameManager : MonoBehaviour
         {
             incorrect++;
             if (RateCoroutine != null) StopCoroutine(RateCoroutine);
-            RateCoroutine = StartCoroutine(ShowRate("OOPS!", badColor));
+            RateCoroutine = StartCoroutine(ShowRate("OOPS", badColor));
             combo = 0;
             HideCombo();
         }
@@ -290,6 +295,8 @@ public class DDRGameManager : MonoBehaviour
 
     void CreateRow()
     {
+        if (rowIndex >= Globals.Levels[levelNum].Orientations.Count)
+            return;
         Globals.Orientations newOrientation = (Globals.Orientations)Globals.Levels[levelNum].Orientations[rowIndex];
         
         if (newOrientation != Globals.Orientations.None)
@@ -300,9 +307,22 @@ public class DDRGameManager : MonoBehaviour
             rt.transform.localPosition = new Vector3(rt.transform.localPosition.x, -200f, rt.transform.localPosition.z);
             row.GetComponent<Row>().SetArrow(newOrientation);
             row.GetComponent<Row>().Orientation = newOrientation;
+            if (rowIndex >= Globals.Levels[levelNum].Orientations.Count - 1)
+            {
+                row.GetComponent<Row>().IsLast = true;
+            }
             Rows.Add(row);
         }
         rowIndex++;
+    }
+
+    void CompleteLevel()
+    {
+        Globals.CurrentGameState = Globals.GameStates.LevelComplete;
+        LevelComplete.transform.localScale = new Vector3(.1f, .1f, .1f);
+        LevelComplete.SetActive(true);
+        LevelComplete.GetComponent<GrowAndShrink>().StartEffect();
+        audioManager.PlayCompleteSound();
     }
 
     void UpdateScore()

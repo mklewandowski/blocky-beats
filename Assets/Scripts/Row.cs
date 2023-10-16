@@ -5,7 +5,7 @@ using UnityEngine;
 public class Row : MonoBehaviour
 {
     public Globals.Orientations Orientation;
-    public bool InHitZone = false;
+    public bool IsLast = false;
     public Globals.ScoreQualities CurrentScoreQuality = Globals.ScoreQualities.Invalid;
 
     [SerializeField]

@@ -8,7 +8,9 @@ public class Globals
 
     public enum GameStates {
         Title,
-        Playing
+        Playing,
+        LevelComplete,
+        Stats,
     }
     public static GameStates CurrentGameState = GameStates.Title;
 
@@ -30,13 +32,12 @@ public class Globals
     public static List<Level> Levels = new List<Level>();
     public static void CreateLevels()
     {
-        int[] level1Orientations = {
-            4, 4, 4, 0, 1, 2, 3, 0, 1, 2,
+        int[] level1Orientations = { // 3 seconds for first to hit
+            2, 2, 1, 0, 1, 2, 3, 0, 1, 2,
             0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
             0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
             0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
-            0, 1, 2, 3, 0, 1, 2, 0, 1, 2,
+            0, 1, 2, 3, 0, 1, 2, 2,
         };
         Level level1 = new Level(1f, level1Orientations);
         Levels.Add(level1);

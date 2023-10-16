@@ -13,6 +13,9 @@ public class AudioManager : MonoBehaviour
     AudioClip ButtonSound;
 
     [SerializeField]
+    AudioClip CompleteSound;
+
+    [SerializeField]
     AudioClip[] LevelMusic;
 
     void Awake()
@@ -25,6 +28,7 @@ public class AudioManager : MonoBehaviour
     public void StartMusic(int levelNum)
     {
         audioSource.clip = LevelMusic[levelNum];
+        audioSource.loop = false;
         audioSource.Play();
     }
     public void StopMusic()
@@ -42,5 +46,11 @@ public class AudioManager : MonoBehaviour
     {
         if (Globals.AudioOn)
             audioSource.PlayOneShot(ButtonSound, 1f);
+    }
+
+    public void PlayCompleteSound()
+    {
+        if (Globals.AudioOn)
+            audioSource.PlayOneShot(CompleteSound, 1f);   
     }
 }
