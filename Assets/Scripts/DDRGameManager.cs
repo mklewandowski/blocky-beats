@@ -10,6 +10,10 @@ public class DDRGameManager : MonoBehaviour
 {
     AudioManager audioManager;
     [SerializeField]
+    Image Background;
+    [SerializeField]
+    Sprite[] Backgrounds;
+    [SerializeField]
     GameObject Title;
     [SerializeField]
     GameObject StartContainer;
@@ -255,6 +259,7 @@ public class DDRGameManager : MonoBehaviour
 
     public void StartLevel()
     {
+        Background.sprite = Backgrounds[levelNum];
         rowTimerMax = Globals.Levels[levelNum].TimeInterval;
         Globals.CurrentGameState = Globals.GameStates.Playing;
         rowTimer = Globals.Levels[levelNum].TimeInterval * 2f;

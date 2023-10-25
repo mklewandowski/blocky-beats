@@ -561,7 +561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &260985025
 RectTransform:
   m_ObjectHideFlags: 0
@@ -930,7 +930,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1334,6 +1334,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fa1749f392a07540af8f30b4ff8e198, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Background: {fileID: 1065413987}
+  Backgrounds:
+  - {fileID: 21300000, guid: 449a29010b186a0488107d0f10555a7d, type: 3}
+  - {fileID: 21300000, guid: 85c601f6ed0582946bd63af411beb81b, type: 3}
+  - {fileID: 21300000, guid: 0cfd54578c9e7c241bb26e3de4522b23, type: 3}
   Title: {fileID: 345024289}
   StartContainer: {fileID: 1148736997}
   PlayButtons: {fileID: 412663348}
@@ -2476,6 +2481,7 @@ GameObject:
   - component: {fileID: 1065413986}
   - component: {fileID: 1065413988}
   - component: {fileID: 1065413987}
+  - component: {fileID: 1065413989}
   m_Layer: 5
   m_Name: BackgroundImage
   m_TagString: Untagged
@@ -2492,7 +2498,7 @@ RectTransform:
   m_GameObject: {fileID: 1065413985}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.75, y: 2.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1122977408}
@@ -2501,7 +2507,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 192, y: 256}
+  m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1065413987
 MonoBehaviour:
@@ -2523,7 +2529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6f76133414797834c846c6cb9a2cf1aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 449a29010b186a0488107d0f10555a7d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2541,6 +2547,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1065413985}
   m_CullTransparentMesh: 1
+--- !u!114 &1065413989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065413985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91f0583d2a8c8b84798a406cc148c456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1072225740
 GameObject:
   m_ObjectHideFlags: 0
@@ -4580,7 +4598,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1875349314
 RectTransform:
   m_ObjectHideFlags: 0
