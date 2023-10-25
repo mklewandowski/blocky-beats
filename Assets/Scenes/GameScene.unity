@@ -1339,6 +1339,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 449a29010b186a0488107d0f10555a7d, type: 3}
   - {fileID: 21300000, guid: 85c601f6ed0582946bd63af411beb81b, type: 3}
   - {fileID: 21300000, guid: 0cfd54578c9e7c241bb26e3de4522b23, type: 3}
+  - {fileID: 21300000, guid: 214e781ed58b9c9499753d93db52fb23, type: 3}
+  - {fileID: 21300000, guid: d074099356712824aa009250ecee00b3, type: 3}
   Title: {fileID: 345024289}
   StartContainer: {fileID: 1148736997}
   PlayButtons: {fileID: 412663348}
