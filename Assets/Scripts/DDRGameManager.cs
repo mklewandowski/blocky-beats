@@ -263,7 +263,7 @@ public class DDRGameManager : MonoBehaviour
         rowTimerMax = Globals.Levels[levelNum].TimeInterval;
         Globals.CurrentGameState = Globals.GameStates.Playing;
         rowTimer = Globals.Levels[levelNum].TimeInterval * 2f;
-        levelDelay = Globals.Levels[levelNum].TimeInterval * 2f;
+        levelDelay = Globals.Levels[levelNum].Delay;
         endLevelDelay = 3f;
         statsDelay = 1.5f;
         rowIndex = 0;

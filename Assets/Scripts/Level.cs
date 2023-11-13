@@ -6,11 +6,14 @@ public class Level
 {
     public float TimeInterval = 1f;
 
+    public float Delay = 2f;
+
     public List<int> Orientations;
 
-    public Level(float tInterval, int[] orientations)
+    public Level(float tInterval, float tDelay, int[] orientations)
     {
         TimeInterval = tInterval;
+        Delay = tDelay;
         Orientations = new List<int>();
         foreach (int i in orientations)
         {
