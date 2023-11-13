@@ -414,7 +414,7 @@ public class DDRGameManager : MonoBehaviour
                 row.GetComponent<Row>().IsLast = true;
             }
             Rows.Add(row);
-            maxPoints+= 10;
+            maxPoints += 10;
         }
         rowIndex++;
     }
