@@ -8,6 +8,7 @@ public class Globals
 
     public enum GameStates {
         Title,
+        Choose,
         Playing,
         LevelComplete,
         Stats,
@@ -33,9 +34,9 @@ public class Globals
     public static void CreateLevels()
     {
         int[] level1Orientations = { // 3 seconds for first to hit
-            1, 2, 0, 3, 2, 2, 1, 3, 1, 2, 
+            1, 2, 0, 3, 2, 2, 1, 3, 1, 2,
             1, 0, 3, 1, 1, 3, 0, 3, 2, 0,
-            2, 1, 3, 2, 1, 0, 2, 3, 2, 3, 
+            2, 1, 3, 2, 1, 0, 2, 3, 2, 3,
             1, 1, 2, 3, 2, 1, 0, 1, 3, 2,
             3, 1, 0, 2, 2, 1, 0, 1
         };
@@ -51,6 +52,34 @@ public class Globals
         Level level2 = new Level(.9f, 2f, level2Orientations);
         Levels.Add(level2);
 
+        // WTD WTD WTD these all need to be replaced
+        int[] level3Orientations = { // 3 seconds for first to hit
+            0, 2, 3, 0, 3, 1, 0, 2, 2, 1, 3, 1, 3, 3, 2, 0, 1, 2, 1, 1,
+            3, 2, 1, 0, 2, 0, 1, 1, 1, 0, 1, 3, 2, 0, 3, 3, 3, 2, 2, 0,
+            0, 3, 0, 1, 0, 2, 1, 3, 1, 3, 0, 0, 2, 0, 3, 3, 0, 3, 2, 1,
+            2, 3
+        };
+        Level level3 = new Level(.9f, 2f, level3Orientations);
+        Levels.Add(level3);
+
+        int[] level4Orientations = { // 3 seconds for first to hit
+            0, 2, 3, 0, 3, 1, 0, 2, 2, 1, 3, 1, 3, 3, 2, 0, 1, 2, 1, 1,
+            3, 2, 1, 0, 2, 0, 1, 1, 1, 0, 1, 3, 2, 0, 3, 3, 3, 2, 2, 0,
+            0, 3, 0, 1, 0, 2, 1, 3, 1, 3, 0, 0, 2, 0, 3, 3, 0, 3, 2, 1,
+            2, 3
+        };
+        Level level4 = new Level(.9f, 2f, level4Orientations);
+        Levels.Add(level4);
+
+        int[] level5Orientations = { // 3 seconds for first to hit
+            0, 2, 3, 0, 3, 1, 0, 2, 2, 1, 3, 1, 3, 3, 2, 0, 1, 2, 1, 1,
+            3, 2, 1, 0, 2, 0, 1, 1, 1, 0, 1, 3, 2, 0, 3, 3, 3, 2, 2, 0,
+            0, 3, 0, 1, 0, 2, 1, 3, 1, 3, 0, 0, 2, 0, 3, 3, 0, 3, 2, 1,
+            2, 3
+        };
+        Level level5 = new Level(.9f, 2f, level5Orientations);
+        Levels.Add(level5);
+
     }
-    
+
 }

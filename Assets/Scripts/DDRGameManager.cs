@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Runtime.InteropServices;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public class DDRGameManager : MonoBehaviour
 {
@@ -19,6 +17,8 @@ public class DDRGameManager : MonoBehaviour
     GameObject StartContainer;
     [SerializeField]
     GameObject PlayButtons;
+    [SerializeField]
+    GameObject LevelSelect;
     [SerializeField]
     GameObject PlayField;
     [SerializeField]
@@ -69,7 +69,7 @@ public class DDRGameManager : MonoBehaviour
     float inGoodThreshold = 70f;
     float inGreatThreshold = 83f;
     float inPerfectThreshold = 96f;
-    float destroyThreshold = 103f;
+    float destroyThreshold = 105f;
 
     Color goodColor = new Color(255f/255f, 216f/255f, 0/255f);
     Color badColor = new Color(255f/255f, 0, 110f/255f);
@@ -98,7 +98,7 @@ public class DDRGameManager : MonoBehaviour
     void Start()
     {
         Title.GetComponent<MoveNormal>().MoveDown();
-        StartContainer.GetComponent<MoveNormal>().MoveUp();        
+        StartContainer.GetComponent<MoveNormal>().MoveUp();
     }
 
     // Update is called once per frame
@@ -145,7 +145,7 @@ public class DDRGameManager : MonoBehaviour
                 LevelStatsText.GetComponent<TypewriterUI>().StartEffect("", levelStatsString);
                 scoreDelay = 2f;
             }
-        }  
+        }
         if (scoreDelay > 0)
         {
             scoreDelay -= Time.deltaTime;
@@ -163,7 +163,7 @@ public class DDRGameManager : MonoBehaviour
                 EndLevelButtons.GetComponent<MoveNormal>().MoveUp();
                 audioManager.PlayCompleteSound();
             }
-        }   
+        }
     }
 
     void HideLevelComplete()
@@ -173,9 +173,9 @@ public class DDRGameManager : MonoBehaviour
             endLevelDelay -= Time.deltaTime;
             if (endLevelDelay <= 0)
             {
-                PlayButtons.GetComponent<MoveNormal>().MoveDown();   
-                PlayField.GetComponent<MoveNormal>().MoveUp(); 
-                LevelStats.GetComponent<MoveNormal>().MoveUp();   
+                PlayButtons.GetComponent<MoveNormal>().MoveDown();
+                PlayField.GetComponent<MoveNormal>().MoveUp();
+                LevelStats.GetComponent<MoveNormal>().MoveUp();
                 LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
                 LevelScore.SetActive(false);
                 LevelScorePercent.SetActive(false);
@@ -246,14 +246,25 @@ public class DDRGameManager : MonoBehaviour
         }
     }
 
-    public void StartGame()
-    {      
+    public void ShowChooseLevel()
+    {
+        audioManager.PlayCompleteSound();
+        LevelSelect.GetComponent<MoveNormal>().MoveUp();
+        Title.GetComponent<MoveNormal>().MoveUp();
+        StartContainer.GetComponent<MoveNormal>().MoveDown();
+        EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
+        LevelStats.GetComponent<MoveNormal>().MoveDown();
+        Globals.CurrentGameState = Globals.GameStates.Stats;
+    }
+
+    public void StartGame(int level)
+    {
+        levelNum = level;
         audioManager.StopMusic();
         audioManager.PlayButtonSound();
-        Title.GetComponent<MoveNormal>().MoveUp();
-        StartContainer.GetComponent<MoveNormal>().MoveDown();   
-        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
-        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        LevelSelect.GetComponent<MoveNormal>().MoveDown();
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();
+        PlayField.GetComponent<MoveNormal>().MoveDown();
         StartLevel();
     }
 
@@ -356,7 +367,7 @@ public class DDRGameManager : MonoBehaviour
                 }
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, Color.yellow, .15f, .3f));
             }
-            else 
+            else
             {
                 incorrect++;
                 StartCoroutine(ShowHighlight(Rows[0].GetComponent<Row>().Orientation, badColor, .15f, .3f));
@@ -400,7 +411,7 @@ public class DDRGameManager : MonoBehaviour
         if (rowIndex >= Globals.Levels[levelNum].Orientations.Count)
             return;
         Globals.Orientations newOrientation = (Globals.Orientations)Globals.Levels[levelNum].Orientations[rowIndex];
-        
+
         if (newOrientation != Globals.Orientations.None)
         {
             GameObject row = Instantiate(RowPrefab, new Vector3(0, -100f, 0), Quaternion.identity, RowContainer.transform);
@@ -466,18 +477,18 @@ public class DDRGameManager : MonoBehaviour
         Glows[index].GetComponent<Image>().color = c;
         Highlights[index].SetActive(true);
         Glows[index].SetActive(true);
-        while (inTime >= 0.0f) 
+        while (inTime >= 0.0f)
         {
             Glows[index].GetComponent<Image>().color = new Color(c.r, c.g, c.b, 1f - inTime / maxInTime);
             inTime -= Time.deltaTime;
-            yield return null; 
+            yield return null;
         }
-        while (outTime >= 0.0f) 
+        while (outTime >= 0.0f)
         {
             Glows[index].GetComponent<Image>().color = new Color(c.r, c.g, c.b, outTime / maxOutTime);
             Highlights[index].GetComponent<Image>().color = new Color(c.r, c.g, c.b, outTime / maxOutTime);
             outTime -= Time.deltaTime;
-            yield return null; 
+            yield return null;
         }
         Highlights[index].SetActive(false);
         Glows[index].SetActive(false);
@@ -492,10 +503,10 @@ public class DDRGameManager : MonoBehaviour
         Rate.transform.localScale = new Vector3(.1f, .1f, .1f);
         Rate.SetActive(true);
         Rate.GetComponent<GrowAndShrink>().StartEffect();
-        while (maxTime >= 0.0f) 
+        while (maxTime >= 0.0f)
         {
             maxTime -= Time.deltaTime;
-            yield return null; 
+            yield return null;
         }
         Rate.SetActive(false);
     }
@@ -504,9 +515,9 @@ public class DDRGameManager : MonoBehaviour
     {
         audioManager.PlayCompleteSound();
         EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
-        LevelStats.GetComponent<MoveNormal>().MoveDown();  
-        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
-        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        LevelStats.GetComponent<MoveNormal>().MoveDown();
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();
+        PlayField.GetComponent<MoveNormal>().MoveDown();
         StartLevel();
     }
     public void SelectNextLevel()
@@ -516,9 +527,9 @@ public class DDRGameManager : MonoBehaviour
             levelNum = 0;
         audioManager.PlayCompleteSound();
         EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
-        LevelStats.GetComponent<MoveNormal>().MoveDown();  
-        PlayButtons.GetComponent<MoveNormal>().MoveUp();   
-        PlayField.GetComponent<MoveNormal>().MoveDown(); 
+        LevelStats.GetComponent<MoveNormal>().MoveDown();
+        PlayButtons.GetComponent<MoveNormal>().MoveUp();
+        PlayField.GetComponent<MoveNormal>().MoveDown();
         StartLevel();
     }
 }
