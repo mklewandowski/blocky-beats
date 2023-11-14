@@ -58,7 +58,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayClickSound()
     {
-        int num = Random.Range(0, ClickSounds.Length - 1);
+        int num = Random.Range(0, ClickSounds.Length);
         audioSource.PlayOneShot(ClickSounds[num], .5f);
     }
 }
