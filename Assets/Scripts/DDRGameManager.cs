@@ -254,7 +254,7 @@ public class DDRGameManager : MonoBehaviour
         StartContainer.GetComponent<MoveNormal>().MoveDown();
         EndLevelButtons.GetComponent<MoveNormal>().MoveDown();
         LevelStats.GetComponent<MoveNormal>().MoveDown();
-        Globals.CurrentGameState = Globals.GameStates.Stats;
+        Globals.CurrentGameState = Globals.GameStates.Choose;
     }
 
     public void StartGame(int level)
