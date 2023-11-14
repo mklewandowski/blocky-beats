@@ -80,7 +80,7 @@ public class DDRGameManager : MonoBehaviour
     int levelNum = 0;
     float levelDelay = 2f;
     int rowIndex = 0;
-    float endLevelDelay = 3f;
+    float endLevelDelay = 4f;
     float statsDelay = 1.5f;
     float scoreDelay = 0;
 
@@ -230,7 +230,7 @@ public class DDRGameManager : MonoBehaviour
             HideCombo();
             UpdateScore();
             if (Rows[0].GetComponent<Row>().IsLast)
-                CompleteLevel();
+                StartCoroutine(CompleteLevel());
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
@@ -275,7 +275,7 @@ public class DDRGameManager : MonoBehaviour
         Globals.CurrentGameState = Globals.GameStates.Playing;
         rowTimer = Globals.Levels[levelNum].TimeInterval * 2f;
         levelDelay = Globals.Levels[levelNum].Delay;
-        endLevelDelay = 3f;
+        endLevelDelay = 4f;
         statsDelay = 1.5f;
         rowIndex = 0;
         incorrect = 0;
@@ -377,7 +377,7 @@ public class DDRGameManager : MonoBehaviour
                 HideCombo();
             }
             if (Rows[0].GetComponent<Row>().IsLast)
-                CompleteLevel();
+                StartCoroutine(CompleteLevel());
             Destroy(Rows[0]);
             Rows.RemoveAt(0);
         }
@@ -430,9 +430,18 @@ public class DDRGameManager : MonoBehaviour
         rowIndex++;
     }
 
-    void CompleteLevel()
+    IEnumerator CompleteLevel()
     {
         Globals.CurrentGameState = Globals.GameStates.LevelComplete;
+
+        float maxTime = 1.5f;
+        while (maxTime >= 0.0f)
+        {
+            maxTime -= Time.deltaTime;
+            yield return null;
+        }
+
+        HideCombo();
         LevelComplete.transform.localScale = new Vector3(.1f, .1f, .1f);
         LevelComplete.SetActive(true);
         LevelComplete.GetComponent<GrowAndShrink>().StartEffect();
