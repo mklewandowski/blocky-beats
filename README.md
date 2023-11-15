@@ -3,6 +3,7 @@ Blocky Beats is a small, lo-fi rhythm game that I made after making another rhyt
 
 ## Gameplay
 ![Blocky Beats gameplay](https://github.com/mklewandowski/blocky-beats/tree/main/Assets/Images/blocky-beats-small.gif?raw=true)
+![Nightmare on Beat Street gameplay](https://github.com/mklewandowski/nightmare-on-beat-street/blob/main/Assets/Images/nightmare-gameplay-small.gif?raw=true)
 
 - Match rhythm arrows as music plays.
 - Unlock next level by scoring an 80% or more on current level.
