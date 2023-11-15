@@ -2,8 +2,8 @@
 Blocky Beats is a small, lo-fi rhythm game that I made after making another rhythm game, Nightmare on Beat Street, for the Scream Jam 2023. I wanted to make a pure rhythm game instead of something horror/action themed so I ended up with Blocky Beats. Blocky Beats is meant to be low-key with calming, gentle beats. It's not meant to be particularly difficult, but rather something you might play on a rainy day or if you just want to relax and listen to some music. There's only 5 levels right now, but I might add more in a future update.
 
 ## Gameplay
-![Blocky Beats gameplay](https://github.com/mklewandowski/blocky-beats/tree/main/Assets/Images/blocky-beats-small.gif?raw=true)
-![Nightmare on Beat Street gameplay](https://github.com/mklewandowski/nightmare-on-beat-street/blob/main/Assets/Images/nightmare-gameplay-small.gif?raw=true)
+![gameplay](https://github.com/mklewandowski/blocky-beats/blob/main/Assets/Images/blocky-beats-small.gif?raw=true)
+![gameplay](https://github.com/mklewandowski/nightmare-on-beat-street/blob/main/Assets/Images/nightmare-gameplay-small.gif?raw=true)
 
 - Match rhythm arrows as music plays.
 - Unlock next level by scoring an 80% or more on current level.
