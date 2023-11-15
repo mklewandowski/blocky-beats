@@ -56,6 +56,11 @@ public class DDRGameManager : MonoBehaviour
 
     Coroutine RateCoroutine;
 
+    [SerializeField]
+    GameObject[] LevelButtons;
+    [SerializeField]
+    TextMeshProUGUI[] LevelTexts;
+
     int maxPoints = 0;
     int good = 0;
     int great = 0;
@@ -90,6 +95,16 @@ public class DDRGameManager : MonoBehaviour
         audioManager = this.GetComponent<AudioManager>();
 
         Globals.CreateLevels();
+
+        for (int x = 0; x < Globals.LevelsUnlocked.Length; x++)
+        {
+            if (Globals.LevelsUnlocked[x])
+            {
+                LevelButtons[x].GetComponent<Button>().enabled = true;
+                LevelButtons[x].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+                LevelTexts[x].text = "Level " + (x + 1).ToString();
+            }
+        }
     }
 
     // Start is called before the first frame update

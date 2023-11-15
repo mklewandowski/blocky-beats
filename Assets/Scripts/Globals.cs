@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class Globals
 {
@@ -31,6 +30,7 @@ public class Globals
     }
 
     public static List<Level> Levels = new List<Level>();
+    public static bool[] LevelsUnlocked = {true, false, false, false, false};
     public static void CreateLevels()
     {
         int[] level1Orientations = { // 3 seconds for first to hit
