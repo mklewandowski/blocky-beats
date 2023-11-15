@@ -30,8 +30,6 @@ public class DDRGameManager : MonoBehaviour
     [SerializeField]
     GameObject RowContainer;
     [SerializeField]
-    TextMeshProUGUI Score;
-    [SerializeField]
     GameObject Rate;
     [SerializeField]
     TextMeshProUGUI RateText;
@@ -228,7 +226,6 @@ public class DDRGameManager : MonoBehaviour
             missed++;
             combo = 0;
             HideCombo();
-            UpdateScore();
             if (Rows[0].GetComponent<Row>().IsLast)
                 StartCoroutine(CompleteLevel());
             Destroy(Rows[0]);
@@ -389,7 +386,6 @@ public class DDRGameManager : MonoBehaviour
             combo = 0;
             HideCombo();
         }
-        UpdateScore();
     }
 
     void ShowCombo()
@@ -456,15 +452,6 @@ public class DDRGameManager : MonoBehaviour
         levelStatsString += "Perfect: " + perfect + "\n";
         levelStatsString += "Incorrect: " + (incorrect + invalid) + "\n";
         levelStatsString += "Missed: " + missed + "\n";
-    }
-
-    void UpdateScore()
-    {
-        Score.text = "Good: " + good + "\n";
-        Score.text += "Great: " + great + "\n";
-        Score.text += "Perfect: " + perfect + "\n";
-        Score.text += "Incorrect: " + (incorrect + invalid) + "\n";
-        Score.text += "Missed: " + missed + "\n";
     }
 
     float CalculateFinalScore()
