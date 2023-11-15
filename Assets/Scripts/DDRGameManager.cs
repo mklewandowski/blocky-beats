@@ -64,6 +64,8 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI LevelUnlocked;
     [SerializeField]
     TextMeshProUGUI[] LevelBestScoreTexts;
+    [SerializeField]
+    GameObject LevelUnlockThresh;
 
     int maxPoints = 0;
     int good = 0;
@@ -194,6 +196,11 @@ public class DDRGameManager : MonoBehaviour
                     LevelTexts[levelNum + 1].text = "Level " + (levelNum + 2).ToString();
                     LevelUnlocked.text = "NEXT LEVEL UNLOCKED";
                 }
+                else if (levelNum < 4 && !Globals.LevelsUnlocked[levelNum + 1])
+                {
+                    LevelUnlockThresh.SetActive(true);
+                }
+
                 if (finalScore > Globals.LevelBestScores[levelNum])
                 {
                     Globals.SaveIntToPlayerPrefs("LevelBestTime" + levelNum.ToString(), finalScore);
@@ -223,6 +230,7 @@ public class DDRGameManager : MonoBehaviour
                 LevelStats.GetComponent<MoveNormal>().MoveUp();
                 LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
                 LevelUnlocked.text = "";
+                LevelUnlockThresh.SetActive(false);
                 LevelScore.SetActive(false);
                 LevelScorePercent.SetActive(false);
                 Globals.CurrentGameState = Globals.GameStates.Stats;
