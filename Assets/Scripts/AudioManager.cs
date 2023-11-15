@@ -53,12 +53,12 @@ public class AudioManager : MonoBehaviour
     public void PlayCompleteSound()
     {
         if (Globals.AudioOn)
-            audioSource.PlayOneShot(CompleteSound, 1f);   
+            audioSource.PlayOneShot(CompleteSound, 1f);
     }
-    
+
     public void PlayClickSound()
     {
-        int num = Random.Range(0, ClickSounds.Length - 1);
+        int num = Random.Range(0, ClickSounds.Length);
         audioSource.PlayOneShot(ClickSounds[num], .5f);
     }
 }
