@@ -62,6 +62,8 @@ public class DDRGameManager : MonoBehaviour
     TextMeshProUGUI[] LevelTexts;
     [SerializeField]
     TextMeshProUGUI LevelUnlocked;
+    [SerializeField]
+    TextMeshProUGUI[] LevelBestScoreTexts;
 
     int maxPoints = 0;
     int good = 0;
@@ -103,6 +105,12 @@ public class DDRGameManager : MonoBehaviour
             int defaultVal = x == 0 ? 1 : 0;
             int ppVal = Globals.LoadIntFromPlayerPrefs("LevelUnlocked" + x.ToString(), defaultVal);
             Globals.LevelsUnlocked[x] = ppVal == 1;
+            defaultVal = -1;
+
+            ppVal = Globals.LoadIntFromPlayerPrefs("LevelBestTime" + x.ToString(), defaultVal);
+            Globals.LevelBestScores[x] = ppVal;
+            if (Globals.LevelBestScores[x] >= 0)
+                LevelBestScoreTexts[x].text = "Best\n" + Globals.LevelBestScores[x].ToString() + "%";
         }
         for (int x = 0; x < Globals.LevelsUnlocked.Length; x++)
         {
@@ -176,7 +184,7 @@ public class DDRGameManager : MonoBehaviour
                 LevelScore.SetActive(true);
                 LevelScore.GetComponent<GrowAndShrink>().StartEffect();
 
-                float finalScore = CalculateFinalScore();
+                int finalScore = (int)CalculateFinalScore();
                 if (levelNum < 4 && !Globals.LevelsUnlocked[levelNum + 1] && finalScore >= 80f)
                 {
                     // level unlocked
@@ -186,7 +194,14 @@ public class DDRGameManager : MonoBehaviour
                     LevelTexts[levelNum + 1].text = "Level " + (levelNum + 2).ToString();
                     LevelUnlocked.text = "NEXT LEVEL UNLOCKED";
                 }
-                LevelScorePercent.GetComponent<TextMeshProUGUI>().text = finalScore.ToString("0") + "%";
+                if (finalScore > Globals.LevelBestScores[levelNum])
+                {
+                    Globals.SaveIntToPlayerPrefs("LevelBestTime" + levelNum.ToString(), finalScore);
+                    Globals.LevelBestScores[levelNum] = finalScore;
+                    if (Globals.LevelBestScores[levelNum] >= 0)
+                        LevelBestScoreTexts[levelNum].text = "Best\n" + Globals.LevelBestScores[levelNum].ToString() + "%";
+                }
+                LevelScorePercent.GetComponent<TextMeshProUGUI>().text = finalScore.ToString() + "%";
                 LevelScorePercent.transform.localScale = new Vector3(.1f, .1f, .1f);
                 LevelScorePercent.SetActive(true);
                 LevelScorePercent.GetComponent<GrowAndShrink>().StartEffect();
