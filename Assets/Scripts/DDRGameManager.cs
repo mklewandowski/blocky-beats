@@ -60,6 +60,8 @@ public class DDRGameManager : MonoBehaviour
     GameObject[] LevelButtons;
     [SerializeField]
     TextMeshProUGUI[] LevelTexts;
+    [SerializeField]
+    TextMeshProUGUI LevelUnlocked;
 
     int maxPoints = 0;
     int good = 0;
@@ -96,6 +98,12 @@ public class DDRGameManager : MonoBehaviour
 
         Globals.CreateLevels();
 
+        for (int x = 0; x < Globals.LevelsUnlocked.Length; x++)
+        {
+            int defaultVal = x == 0 ? 1 : 0;
+            int ppVal = Globals.LoadIntFromPlayerPrefs("LevelUnlocked" + x.ToString(), defaultVal);
+            Globals.LevelsUnlocked[x] = ppVal == 1;
+        }
         for (int x = 0; x < Globals.LevelsUnlocked.Length; x++)
         {
             if (Globals.LevelsUnlocked[x])
@@ -169,6 +177,15 @@ public class DDRGameManager : MonoBehaviour
                 LevelScore.GetComponent<GrowAndShrink>().StartEffect();
 
                 float finalScore = CalculateFinalScore();
+                if (levelNum < 4 && !Globals.LevelsUnlocked[levelNum + 1] && finalScore >= 80f)
+                {
+                    // level unlocked
+                    Globals.SaveIntToPlayerPrefs("LevelUnlocked" + (levelNum + 1).ToString(), 1);
+                    LevelButtons[levelNum + 1].GetComponent<Button>().enabled = true;
+                    LevelButtons[levelNum + 1].GetComponent<Image>().color = new Color(1f, 1f, 1f, 0f);
+                    LevelTexts[levelNum + 1].text = "Level " + (levelNum + 2).ToString();
+                    LevelUnlocked.text = "NEXT LEVEL UNLOCKED";
+                }
                 LevelScorePercent.GetComponent<TextMeshProUGUI>().text = finalScore.ToString("0") + "%";
                 LevelScorePercent.transform.localScale = new Vector3(.1f, .1f, .1f);
                 LevelScorePercent.SetActive(true);
@@ -190,6 +207,7 @@ public class DDRGameManager : MonoBehaviour
                 PlayField.GetComponent<MoveNormal>().MoveUp();
                 LevelStats.GetComponent<MoveNormal>().MoveUp();
                 LevelStatsText.GetComponent<TextMeshProUGUI>().text = "";
+                LevelUnlocked.text = "";
                 LevelScore.SetActive(false);
                 LevelScorePercent.SetActive(false);
                 Globals.CurrentGameState = Globals.GameStates.Stats;

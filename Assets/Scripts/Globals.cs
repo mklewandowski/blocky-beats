@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Globals
 {
@@ -78,5 +79,15 @@ public class Globals
         };
         Level level5 = new Level(.46875f, 2f, level5Orientations);
         Levels.Add(level5);
+    }
+
+    public static void SaveIntToPlayerPrefs(string key, int val)
+    {
+        PlayerPrefs.SetInt(key, val);
+    }
+    public static int LoadIntFromPlayerPrefs(string key, int defaultVal = 0)
+    {
+        int val = PlayerPrefs.GetInt(key, defaultVal);
+        return val;
     }
 }
